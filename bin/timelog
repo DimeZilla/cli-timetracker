@@ -61,7 +61,11 @@ _sTimeLog(){
 }
 
 _tTimeLog(){
-        cat $TODAYSLOG
+		if [ ! -f $TODAYSLOG ]; then
+			echo "no log started today"
+		else
+        	cat $TODAYSLOG
+		fi
 }
 
 #this checks to make sure that the usr has a .timelog directory where we will store our appdata
