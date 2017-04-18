@@ -1,0 +1,24 @@
+{
+  "name": "cli-timetracker",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DimeZilla/cli-timetracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DimeZilla/cli-timetracker/issues"
+  },
+  "homepage": "https://github.com/DimeZilla/cli-timetracker#readme",
+  "bin": {
+    "timelog": "bin/timelog"
+  },
+  "dependencies": {
+    "auto-loader": "^0.2.0"
+  }
+}

@@ -1,107 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env node
 
-#app-data running file
-RUNNING=$HOME/.timelog/.running.txt
-TODAYSLOG=$HOME/.timelog/logs/`date +%Y%m%d`.txt
+var path = require("path");
+var fs = require("fs");
+var home = require('os').homedir();
+// loads all of the files in our lib folder and neatly packs them in our app object
+var app = require('auto-loader').load( path.dirname(__dirname) + '/lib');
 
-_timelog(){
-	echo "$1ing $2"
-        echo `date +%F" "%T`" - $1: "$2 >> $TODAYSLOG
-}
+// this will set up the checklog first
+app.setup.install();
 
-_diff_to_hours(){
-	#echo $(( ($1 - $2) / 3600 )) | bc
-	sub=`bc -l <<< "$1-$2"`
-	echo `bc -l <<< "$sub/3600"` | xargs printf "%.*f\n" 2
-}
-
-_startTimeLog(){
-	if [ -f $RUNNING ]; then
-		echo "Already have running project: "
-		cat $RUNNING | grep -v "^[0-9]"
-		echo "Please stop project before starting another."
-		exit 1
-	else
-		echo `date +%s` > $RUNNING
-		echo "$1" >> $RUNNING
-		_timelog 'start' "$1"
-	fi
-}
-
-_stopTimeLog(){
-	if [ ! -f $RUNNING ]; then
-		echo "no running project."
-		exit 1
-	fi
-	t1=$( grep "^[0-9]" $RUNNING )
-	t2=$( date +%s )
-	proj=$( grep -v "^[0-9]" $RUNNING )
-	_timelog 'stop' "$proj"
-	diff=$( _diff_to_hours $t2 $t1 )
-	#echo "$t1 $t2 $diff"
-	echo "$proj subtotal: $diff hours" >> $TODAYSLOG
-	echo "" >> $TODAYSLOG
-	rm -f $RUNNING
-}
-
-_sTimeLog(){
-	date -d "$1" 2>: 1>:;
-        if [ $? -eq 1 ]; then
-		echo "Date Invalid. Please enter a proper unix friendly date"
-		exit 1
-	fi
-
-	echo "-- LISTING LOGS FOR `date --date="$1" +%A", "%B" "%d" "%Y` --"
-	if [ -f ~/.timelog/logs/`date --date="$1" +%Y%m%d`.txt ]; then
-	       cat ~/.timelog/logs/`date --date="$1" +%Y%m%d`.txt
-        else
- 		echo "No log for that day"
-	fi
-	echo "-- END OF LIST --"
-}
-
-_tTimeLog(){
-		if [ ! -f $TODAYSLOG ]; then
-			echo "no log started today"
-		else
-        	cat $TODAYSLOG
-		fi
-}
-
-#this checks to make sure that the usr has a .timelog directory where we will store our appdata
-if [ ! -d ~/.timelog ]; then
-	mkdir ~/.timelog
-fi
-if [ ! -d ~/.timelog/logs ]; then
-	mkdir ~/.timelog/logs
-fi
-#if [ ! -f ~/.timelog/master.txt ]; then
-#	touch ~/.timelog/master.txt
-#fi
-if [ ! -f $TOAYSLOG ]; then
-	touch $TODAYSLOG
-fi
-
-#this is our engine - checks what command we are running and then performs the requisite task
-if [ $1 = 'start' ]; then
-	_startTimeLog "$2"
-elif [ $1 = 'stop' ]; then
-	_stopTimeLog
-elif [ $1 = 'search' ]; then
-	_sTimeLog "$2"
-elif [ $1 = 'analyze' ]; then
-	#this will break down how much time was spent on each project
-	echo "analyzing"
-elif [ $1 = 'today' ]; then
-	_tTimeLog
-elif [ $1 = 'distract' ]; then
-	#this will pause the current project and then start a new project temporarily as the "distracting project"
-	echo "distracting"
-elif [ $1 = 'clearF' ]; then
-	> ~/.timelog/logs/`date +%Y%m%d`.txt
-	if [ -f $RUNNING ]; then
-		rm $RUNNING
-	fi
-else
-	echo "No such command as "$1
-fi
