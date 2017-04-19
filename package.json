@@ -19,6 +19,9 @@
     "timelog": "bin/timelog"
   },
   "dependencies": {
-    "auto-loader": "^0.2.0"
+    "auto-loader": "^0.2.0",
+    "columnify": "^1.5.4",
+    "underscore-node": "^0.1.2",
+    "yargs": "^7.1.0"
   }
 }
