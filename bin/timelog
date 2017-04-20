@@ -1,110 +1,55 @@
 #!/usr/bin/env node
 'use strict';
 
-var path = require("path");
-var fs = require("fs");
-var home = require('os').homedir();
 // loads all of the files in our lib folder and neatly packs them in our app object
-var app = require('auto-loader').load( path.dirname(__dirname) + '/lib');
+var path = require("path");
+var loader = require('auto-loader');
+
+var controllers = loader.load( path.dirname(__dirname) + '/lib/controllers');
+var assets = loader.load( path.dirname(__dirname) + '/lib/assets');
+// var models = loader.load( path.dirname(__dirname) + '/lib/models');
 
 var columnify = require('columnify');
 
-var readline = require('readline');
-
 // this will set up the checklog first
-app.setup.install();
+controllers.setup.install();
 
-var arg = app._args;
+var arg = assets._args;
 
-// -c or --create puts us in project or task creation mode
-if( arg.hasArg('c') ){
-    
-    // create project mode
-    if( arg.hasArg('p') ){
-        var project = arg.getArg('p');
-        if( project === ''){
-            console.error( new Error('Project Name Empty'));
-            return false;        
-        }
-  
-        var description = '';
-        if( arg.hasArg('d') ){
-            description = arg.getArg('d');
-        }
-        
-        // now lets create our project
-        app.model.addProject(project, description);
-    } 
-    
-    // create task mode
-    else if( arg.hasArg('t') ){
-        var task = arg.getArg('t');
-        if( task == '' ){
-            console.error( new Error('Task name empty') );
-            return false;
-        }
-
-        var description = '';
-        if( arg.hasArg('d') ){
-            description = arg.getArg('d');
-        }
-
-        app.model.addTask(task, description);
-    }
-    
-    return;
+// set everything to debug mode
+if(arg.hasArg('debug') && arg.getArg('debug') === true){
+    for(var key in app ){
+        app[key].debug = true;
+    };   
 }
 
-// -l or --list puts us in project or task list mode
-if( arg.hasArg('l') ) {
-    
-    var name, type;
+var action = arg.getAction();
 
-    // list projects mode
-    if( arg.hasArg('p') || 
-        (typeof arg.getArg('l') === 'string' && (arg.getArg('l').toLowerCase() === 'project' ||
-        arg.getArg('l').toLowerCase() === 'projects') )
-       ){
-        name = arg.getArg('p');
-        type = 'p';
-        if(typeof name !== 'string'){
-            name = null;
-        }
-    }
-    // list tasks mode
-    else if( arg.hasArg('t') ||
-        (typeof arg.getArg('l') === 'string' && (arg.getArg('l').toLowerCase() === 'task'  ||
-        arg.getArg('l').toLowerCase() === 'tasks') )
-       ){
-        name = arg.getArg('t');
-        type = 't';
-        if(typeof name !== 'sting'){
-            name = null;
-        }
-    }else{
-        var r1 = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        r1.question("Do you want to list all projects and all tasks? [Y|n]: ", (answer) => {
-            if(answer.toUpperCase() == "Y" ){
-                console.log("Projects: ");
-                console.log(columnify(app.model.listData('p')));
-                console.log("");
-                console.log("Tasks: ");
-                console.log(columnify(app.model.listData('t')));
-            }
-            r1.close();
-        });
-        return;
-    }
-    var list = app.model.listData(type,name);
-    if(typeof list == 'string'){
-        console.log(list);
-    }else{
-        console.log( columnify( app.model.listData(type, name) ) );
-    }
+/* accepted actions */
+var accepts = ['start', 'stop', 'help', 'distract', 'create', 'list', 'update', 'assign'];
+
+/* create mode */
+if( action == 'create' ){
+    controllers.creator._.create();
+} else if( action == 'list' ){
+    controllers.lister._.list();
+}else if ( action == 'start' ){
+
+}else if ( action == 'stop' ){
+
+}else if ( action == 'help' ){
+
+}else if ( action == 'distract' ){
+
+}else if ( action == 'update' ){
+
+}else if ( action == 'assign' ){
+
+}else{
+    console.log("Sorry, no accept action passed");
 }
+
+process.exit();
 
 // asignment mode
 if( arg.hasArg('a') ){
@@ -117,4 +62,27 @@ if( arg.hasArg('a') ){
        task = app.model.getUID(arg.getArg('t'));
 
     app.model.setProjectTask(project,task);
+}
+
+/* update mode */
+if( arg.hasArg('u') ){
+    if( (!arg.hasArg('t') && !arg.hasArg('p')) || (arg.hasArg('t') && arg.hasArg('p')) ){
+        console.log(new Error('Must specify a project or a task that you want to update. Can\'t specify both.'));
+        process.exit(1);
+    }
+
+    var type = arg.hasArg('t') ? 't' : 'p', 
+        name = arg.getArg('t') || arg.getArg('p'), 
+        data = {},
+        description = arg.hasArg('d') ? arg.getArg('d') : null,
+        billable = arg.hasArg('b') ? arg.getArg('b') : null;
+
+    if(desciption !== null){
+        data.desctiption = desctiption;
+    }
+    if(type == 't'){
+        if(billable !== null){
+            data.billable = billable;
+        }
+    }
 }
