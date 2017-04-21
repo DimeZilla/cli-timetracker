@@ -10,6 +10,7 @@ var assets = loader.load( path.dirname(__dirname) + '/lib/assets');
 // var models = loader.load( path.dirname(__dirname) + '/lib/models');
 
 var columnify = require('columnify');
+var readline = require('readline');
 
 // this will set up the checklog first
 controllers.setup.install();
@@ -30,9 +31,32 @@ var accepts = ['start', 'stop', 'help', 'distract', 'create', 'list', 'update', 
 
 /* create mode */
 if( action == 'create' ){
-    controllers.creator._.create();
+    controllers.creator._(arg);
 } else if( action == 'list' ){
-    controllers.lister._.list();
+    var printAll = false;
+    /* this part just does not work! */
+    if(!arg.hasPos(1)){
+        var r1 = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        
+        r1.question("Do you want to list all projects and all tasks? [Y|n]: ", (answer) => {
+            console.log("WHAT THE FUCK IS GOING ON! :", answer);
+            if(answer.toUpperCase() == "Y" ){
+                printAll = true;
+            }
+            r1.close();
+        });
+    }
+    controllers.lister._(arg, printAll);
+
+}else if ( action == 'delete' ){
+    controllers.deleter._(arg);
+}else if ( action == 'assign' ){
+    controllers.assigner._(arg);
+}else if ( action == 'update' ){
+    controllers.updater._(arg);
 }else if ( action == 'start' ){
 
 }else if ( action == 'stop' ){
@@ -41,48 +65,8 @@ if( action == 'create' ){
 
 }else if ( action == 'distract' ){
 
-}else if ( action == 'update' ){
-
-}else if ( action == 'assign' ){
-
 }else{
     console.log("Sorry, no accept action passed");
 }
 
 process.exit();
-
-// asignment mode
-if( arg.hasArg('a') ){
-    if(!arg.hasArg('t') || !arg.hasArg('p')){
-        console.log(new Error('Assign task to Project requires both a task and project name or uid declaration'));
-        process.exit(1);
-    }
-
-   var project = app.model.getUID(arg.getArg('p')),
-       task = app.model.getUID(arg.getArg('t'));
-
-    app.model.setProjectTask(project,task);
-}
-
-/* update mode */
-if( arg.hasArg('u') ){
-    if( (!arg.hasArg('t') && !arg.hasArg('p')) || (arg.hasArg('t') && arg.hasArg('p')) ){
-        console.log(new Error('Must specify a project or a task that you want to update. Can\'t specify both.'));
-        process.exit(1);
-    }
-
-    var type = arg.hasArg('t') ? 't' : 'p', 
-        name = arg.getArg('t') || arg.getArg('p'), 
-        data = {},
-        description = arg.hasArg('d') ? arg.getArg('d') : null,
-        billable = arg.hasArg('b') ? arg.getArg('b') : null;
-
-    if(desciption !== null){
-        data.desctiption = desctiption;
-    }
-    if(type == 't'){
-        if(billable !== null){
-            data.billable = billable;
-        }
-    }
-}
