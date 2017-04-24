@@ -17,13 +17,6 @@ controllers.setup.install();
 
 var arg = assets._args;
 
-// set everything to debug mode
-if(arg.hasArg('debug') && arg.getArg('debug') === true){
-    for(var key in app ){
-        app[key].debug = true;
-    };   
-}
-
 var action = arg.getAction();
 
 /* accepted actions */
@@ -53,17 +46,17 @@ if( action == 'create' ){
 
 }else if ( action == 'delete' ){
     controllers.deleter._(arg);
-}else if ( action == 'assign' ){
-    controllers.assigner._(arg);
+}else if ( action == 'assign' || action == 'unassign'){
+    controllers.assigner._(arg, action);
 }else if ( action == 'update' ){
     controllers.updater._(arg);
-}else if ( action == 'start' ){
-
-}else if ( action == 'stop' ){
-
+}else if ( action == 'start' ||  action == 'stop'  || action == 'distract' ){
+    controllers.timer._(action, arg);
+}else if( action == 'status' ){
+    controllers.timer.status();
+}else if( action == 'analyze' ){
+    controllers.timer.analyze(arg);
 }else if ( action == 'help' ){
-
-}else if ( action == 'distract' ){
 
 }else{
     console.log("Sorry, no accept action passed");
