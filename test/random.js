@@ -3,6 +3,7 @@ const assert = require('assert');
 const model = require('../lib/models/include.js');
 const _ = require('underscore-node');
 
+/* these are our test variables */
 const projectname = 'Test Project';
 const projectuid = model.getUID(projectname);
 const taskname = 'Test Task';
