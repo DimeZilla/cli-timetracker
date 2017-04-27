@@ -45,17 +45,22 @@ if( action == 'create' ){
     controllers.lister._(arg, printAll);
 
 }else if ( action == 'delete' ){
-    controllers.deleter._(arg);
+  controllers.deleter._(arg);
 }else if ( action == 'assign' || action == 'unassign'){
-    controllers.assigner._(arg, action);
+  controllers.assigner._(arg, action);
 }else if ( action == 'update' ){
-    controllers.updater._(arg);
-}else if ( action == 'start' ||  action == 'stop'  || action == 'distract' ){
-    controllers.timer._(action, arg);
+  controllers.updater._(arg);
+}else if ( 
+        action == 'start' ||  action == 'stop'  || action == 'distract' ||
+        action == 'analyze'
+    ){
+  controllers.timer[action](arg);
 }else if( action == 'status' ){
-    controllers.timer.status();
-}else if( action == 'analyze' ){
-    controllers.timer.analyze(arg);
+  controllers.timer.status();
+}else if ( action == 'open' ){
+  controllers.setenv.open(arg);
+}else if ( action == 'close' ){
+  controllers.setenv.close(arg);
 }else if ( action == 'help' ){
 
 }else{
