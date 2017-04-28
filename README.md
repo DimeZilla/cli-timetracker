@@ -31,6 +31,20 @@ tlh stop
 tlh analyze
 ```
 
+## Installation
+Installation is super easy. First this is a node app so make sure that you have nodejs installed. Check out the package.json to see which node 4.x+.
+1. Just clone the repository
+2. If on linux run:
+```
+./install.sh
+```
+If not on linux or on a linux emulator like cygwin, run
+``` 
+npm install -g
+```
+
+### Hooray you are good to go!
+
 ## Tasks vs Projects
 Tasks and projects are independent concepts in tlh. You can start a task, you can start a project, you can assign a task to a project, you can start a project with a task that is assigned but you cannot start a project with a task that is not assigned. You cannot start a project or a task that has not beeen created.
  
